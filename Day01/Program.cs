@@ -1,35 +1,68 @@
 ﻿using System;
-using Microsoft.VisualBasic.CompilerServices;
-
+using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using Utils;
 
 namespace Day01
 {
-    class Program
+    internal class Program
     {
-        static int Part01()
+        private static int Part01(List<int> input)
         {
-            return 0;
+            return input.Select(FuelCalculator).Sum();
+            
         }
 
-        static int Part02()
+        private static int Part02(List<int> input)
         {
-            var data = Files.ReadLines();
-            return data[0];
+            var totalFuelList = input.Select(mass =>
+            {
+                var fuelList = new List<int>();
+                var tmp = mass;
+                while ((tmp = FuelCalculator(tmp)) > 0)
+                {
+                    fuelList.Add(tmp);
+                }
+
+                return fuelList.Sum();
+            });
+            return totalFuelList.Sum();
+        }
+
+        private static int FuelCalculator(int mass)
+        {
+            // ReSharper disable once PossibleLossOfFraction
+            return (int) Math.Floor((decimal) (mass / 3)) - 2;
+        }
+
+        [Test]
+        public void Part01ExampleTest()
+        {
+            var input = new List<int>() {12, 14, 1969, 100756};
+            Assert.AreEqual(34241, Part01(input));
         }
         
         [Test]
         public void Part01Test()
         {
-            Assert.AreEqual(0, Part01());
+            var input = Files.ReadLinesAsListOfInt("/home/mmorgan/src/adventofcode2019/Day01/input");
+            Assert.AreEqual(3345909, Part01(input));
         }
 
         [Test]
-        public void Part02Test()
+        public void Part02ExampleTest()
         {
-            Assert.AreEqual(0, Part02());
+            // 33583 + 11192 + 3728 + 1240 + 411 + 135 + 43 + 12 + 2 = 50346
+            var input = new List<int>() {100756};
+            Assert.AreEqual(50346, Part02(input));
         }
         
+        [Test]
+        public void Part02Test()
+        {
+            var input = Files.ReadLinesAsListOfInt("/home/mmorgan/src/adventofcode2019/Day01/input");
+            Assert.AreEqual(5015983, Part02(input));
+        }
     }
 }
