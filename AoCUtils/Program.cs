@@ -11,7 +11,12 @@ namespace Utils
             var lines = new List<string>(System.IO.File.ReadAllLines(aFileName));
             return new List<int>(lines.Select(line => Convert.ToInt32(line)));
         }
-        
+
+        public static int[] ReadFileAsArrayOfInt(string aFileName)
+        {
+            var line = System.IO.File.ReadAllText(aFileName);
+            return line.Split(",").Select(item => Convert.ToInt32(item)).ToArray();
+        }
         static void Main(string[] args) { }
     }
 }
