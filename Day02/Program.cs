@@ -14,27 +14,47 @@ namespace Day01
             int opCode;
             while ((opCode = input[pc]) != 99)
             {
-                switch (opCode)
+                try
                 {
-                    case 1:
-                        input[input[pc + 3]] = input[input[pc + 1]] + input[input[pc + 2]];
-                        break;
-                    case 2:
-                        input[input[pc + 3]] = input[input[pc + 1]] * input[input[pc + 2]];
-                        break;
-                    default:
-                        Console.WriteLine($"Found unknown OP Code {opCode}");
-                        return 0;
+                    switch (opCode)
+                    {
+                        case 1:
+                            input[input[pc + 3]] = input[input[pc + 1]] + input[input[pc + 2]];
+                            break;
+                        case 2:
+                            input[input[pc + 3]] = input[input[pc + 1]] * input[input[pc + 2]];
+                            break;
+                        default:
+                            Console.WriteLine($"Found unknown OP Code {opCode}");
+                            return 0;
+                    }
+                }
+                catch (System.IndexOutOfRangeException)
+                {
+                    return 0;
                 }
 
                 pc += 4;
             }
-            Console.WriteLine(input.Length);
             return input[0];
         }
 
-        private static int Part02(List<int> input)
+        private static int Part02(int[] input, int result)
         {
+            for (var i = 0; i < 100; i++)
+            {
+                for (var j = 0; j < 100; j++)
+                {
+                    int[] freshInput = new int[input.Length];
+                    input.CopyTo(freshInput, 0);
+                    freshInput[1] = i;
+                    freshInput[2] = j;
+                    var returnedFromPart01 = Part01(freshInput);
+                
+                    if (returnedFromPart01 == result) return (100 * i) +j;
+                }
+            }
+
             return 0;
         }
         
@@ -60,16 +80,16 @@ namespace Day01
         [Test]
         public void Part02ExampleTest()
         {
-            // 33583 + 11192 + 3728 + 1240 + 411 + 135 + 43 + 12 + 2 = 50346
-            var input = new List<int>() {100756};
-            Assert.AreEqual(50346, Part02(input));
+            // No real example test
+            Assert.True(true);
         }
         
         [Test]
         public void Part02Test()
         {
-            var input = Files.ReadLinesAsListOfInt("/home/mmorgan/src/adventofcode2019/Day01/input");
-            Assert.AreEqual(5015983, Part02(input));
+            var result = 19690720;
+            var input = Files.ReadFileAsArrayOfInt("/home/mmorgan/src/adventofcode2019/Day02/input");
+            Assert.AreEqual(5064, Part02(input, result));
         }
     }
 }
