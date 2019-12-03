@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 
 namespace Utils
@@ -16,6 +17,18 @@ namespace Utils
         {
             var line = System.IO.File.ReadAllText(aFileName);
             return line.Split(",").Select(item => Convert.ToInt32(item)).ToArray();
+        }
+
+        public static List<string[]> ReadFileAsListOfStringList(string aFileName)
+        {
+            var lines = System.IO.File.ReadLines(aFileName);
+            var input = new List<string[]>();
+            foreach (var line in lines)
+            {
+                input.Add(line.Split(","));
+            }
+
+            return input;
         }
         static void Main(string[] args) { }
     }
