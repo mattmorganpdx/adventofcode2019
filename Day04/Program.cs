@@ -37,28 +37,33 @@ namespace Day04
 
         private static bool HasAdjacentDigitsOccuringOnlyTwice(string password)
         {
-            var returns = new List<bool>();
+            var results = new List<int>();
             for (var i = 0; i < password.Length - 1; i++)
             {
-                if (i + 2 >= password.Length)
+                var groupSize = GetGroupSizeAtIndex(password, i);
+                i += groupSize;
+                results.Add(groupSize);
+            }
+            
+            return results.Any(x => x == 1);
+        }
+
+        private static int GetGroupSizeAtIndex(string password, int index)
+        {
+            var groupSize = 0;
+            var next = index;
+            while (++next < password.Length)
+            {
+                if (password.Substring(index, 1) == password.Substring(next, 1))
                 {
-                    if (password.Substring(i, 1) == password.Substring(i + 1, 1) &&
-                        password.Substring(i, 1) != password.Substring(i - 1, 1))
-                    {
-                        return true;
-                    }
-                }
-                else
+                    ++groupSize;
+                } else
                 {
-                    if (password.Substring(i, 1) == password.Substring(i + 1, 1) &&
-                        password.Substring(i, 1) != password.Substring(i + 2, 1))
-                    {
-                        return true;
-                    }
+                    return groupSize;
                 }
             }
 
-            return false;
+            return groupSize;
         }
 
         private static bool DigitsDontDecrease(string password)
