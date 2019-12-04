@@ -30,6 +30,13 @@ namespace Utils
 
             return input;
         }
+
+        public static Tuple<int, int> ReadFilesAsTupleOfInt(string aFileName)
+        {
+            var lines = System.IO.File.ReadLines(aFileName);
+            var items = lines.First().Split("-");
+            return Tuple.Create(Convert.ToInt32(items[0]), Convert.ToInt32(items[1]));
+        }
         static void Main(string[] args) { }
     }
 }
