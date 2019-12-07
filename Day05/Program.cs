@@ -6,10 +6,11 @@ using Utils;
 
 namespace Day05
 {
-    internal class Program
+    public class Program
     {
-        private static int Part01(int[] input, int initialInput)
+        public static int Part01(int[] input, int initialInput, int secondInput)
         {
+            var firstinput = true;
             var output = 0;
             var pc = 0;
             Tuple<int, List<int>> opCode;
@@ -37,7 +38,9 @@ namespace Day05
                             pc += 4;
                             break;
                         case 3:
-                            input[input[pc + 1]] = initialInput;
+                            input[input[pc + 1]] = firstinput ? initialInput : secondInput;
+                            // Note all the test cases from Day07 passed this with secondInput 0 so WTF!?!
+                            firstinput = false;
                             pc += 2;
                             break;
                         case 4:
@@ -123,7 +126,7 @@ namespace Day05
         public void Part01Test(int expected, int initial)
         {
             var input = Files.ReadFileAsArrayOfInt("/home/mmorgan/src/adventofcode2019/Day05/input");
-            Assert.AreEqual(expected, Part01(input, initial));
+            Assert.AreEqual(expected, Part01(input, initial, 0));
         }
     }
 }

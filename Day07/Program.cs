@@ -4,14 +4,28 @@ using System.ComponentModel;
 using System.Linq;
 using NUnit.Framework;
 using Utils;
+using Day05;
 
 namespace Day07
 {
     internal class Program
     {
-        private static int Part01(IEnumerable<string> input)
+        private static int Part01(int[] input)
         {
-            return 0;
+            const string inputs = "01234";
+            var maxScore = 0;
+            foreach (var current in Permutate(inputs))
+            {
+                var results = new List<int>();
+                foreach (var c in current.ToCharArray())
+                {
+                    var last = results.Count > 0 ? results.Last() : 0;
+                    results.Add(Day05.Program.Part01(input, Convert.ToInt32(c.ToString()), last));
+                }
+
+                if (results.Last() > maxScore) maxScore = results.Last();
+            }
+            return maxScore;
         }
 
         private static int Part02(List<string> input)
@@ -19,18 +33,42 @@ namespace Day07
             return 0;
 
         }
+ 
+        private static IEnumerable<string> Permutate(string source)
+        {
+            if (source.Length == 1) return new List<string> { source };
 
+            var permutations = from c in source
+                from p in Permutate(new String(source.Where(x => x != c).ToArray()))
+                select c + p;
+
+            return permutations;
+        }
+        
         [Test]
         public void Part01ExampleTest()
         {
-            Assert.AreEqual(0, 0);
+            var input = new List<int>() {3, 15, 3, 16, 1002, 16, 10, 16, 1, 16, 15, 15, 4, 15, 99, 0, 0}.ToArray();
+            Assert.AreEqual(43210, Part01(input));
+            input = new List<int>()
+                    {3, 23, 3, 24, 1002, 24, 10, 24, 1002, 23, -1, 23, 101, 5, 23, 23, 1, 24, 23, 23, 4, 23, 99, 0, 0}
+                .ToArray();
+            Assert.AreEqual(54321, Part01(input));
+            input = new List<int>()
+            {
+                3, 31, 3, 32, 1002, 32, 10, 32, 1001, 31, -2, 31, 1007, 31, 0, 33, 1002, 33, 7, 33, 1, 33, 31, 31, 1,
+                32, 31, 31, 4, 31, 99, 0, 0, 0
+            }.ToArray();
+            Assert.AreEqual(65210, Part01(input));
         }
 
         [Test]
         public void Part01Test()
         {
-            var input = System.IO.File.ReadLines("/home/mmorgan/src/adventofcode2019/Day06/input");
-            Assert.AreEqual(0, 0);
+            // 20413 too low
+            // 628201814 too high
+            var input = Files.ReadFileAsArrayOfInt("/home/mmorgan/src/adventofcode2019/Day07/input");
+            Assert.AreEqual(914828, Part01(input));
         }
 
         [Test]
