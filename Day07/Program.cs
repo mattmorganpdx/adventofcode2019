@@ -14,13 +14,14 @@ namespace Day07
         {
             const string inputs = "01234";
             var maxScore = 0;
+            var keepRunning = true;
             foreach (var current in Permutate(inputs))
             {
                 var results = new List<int>();
                 foreach (var c in current.ToCharArray())
                 {
                     var last = results.Count > 0 ? results.Last() : 0;
-                    results.Add(Day05.Program.Part01(input, Convert.ToInt32(c.ToString()), last));
+                    results.Add(Day05.Program.Part01(input, Convert.ToInt32(c.ToString()), last, false).Item1);
                 }
 
                 if (results.Last() > maxScore) maxScore = results.Last();
@@ -30,8 +31,37 @@ namespace Day07
 
         private static int Part02(int[] input)
         {
-            return 0;
+            const string inputs = "56789";
+            var maxScore = 0;
+            foreach (var current in Permutate(inputs))
+            {
+                var results = new List<int>();
+                var shouldContinue = true;
+                var firstRun = true;
+                var firstInput = true;
+                var memory = new Dictionary<char, int[]>();
+                var nextInit = new List<int> {0};
+                while (shouldContinue)
+                {
+                    foreach (var c in current.ToCharArray())
+                    {
+                        var first = firstRun ? Convert.ToInt32(c.ToString()) : nextInit.First();
+                        if (!firstRun) nextInit.RemoveAt(0);
+                        var localInput = memory.ContainsKey(c) ? memory[c] : input;
+                        var (item1, item2, item3) = Day05.Program.Part01(localInput, first, 0, true);
+                        results.Add(item1);
+                        nextInit.Add(item1);
+                        memory[c] = item2;
+                        shouldContinue = item3;
+                        firstInput = false;
+                    }
 
+                    firstRun = false;
+                    if (results.Last() > maxScore) maxScore = results.Last();
+                }
+            }
+            
+            return maxScore;
         }
  
         private static IEnumerable<string> Permutate(string source)

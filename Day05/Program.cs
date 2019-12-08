@@ -8,9 +8,10 @@ namespace Day05
 {
     public class Program
     {
-        public static int Part01(int[] input, int initialInput, int secondInput)
+        public static Tuple<int, int[], bool> Part01(int[] input, int initialInput, int secondInput, bool continuousMode)
         {
-            var firstinput = true;
+            // Why does this return a Tuple? ... see day 7
+            var firstInput = true;
             var output = 0;
             var pc = 0;
             Tuple<int, List<int>> opCode;
@@ -38,13 +39,14 @@ namespace Day05
                             pc += 4;
                             break;
                         case 3:
-                            input[input[pc + 1]] = firstinput ? initialInput : secondInput;
+                            input[input[pc + 1]] = firstInput ? initialInput : secondInput;
                             // Note all the test cases from Day07 passed this with secondInput 0 so WTF!?!
-                            firstinput = false;
+                            firstInput = false;
                             pc += 2;
                             break;
                         case 4:
                             output = input[input[pc + 1]];
+                            if (continuousMode) return Tuple.Create(output, input, true);
                             pc += 2;
                             break;
                         case 5:
@@ -89,16 +91,16 @@ namespace Day05
                             break;
                         default:
                             Console.WriteLine($"Found unknown OP Code {opCode.Item1}");
-                            return -1;
+                            return Tuple.Create(-1, input, false);
                     }
                 }
                 catch (System.IndexOutOfRangeException)
                 {
-                    return -1;
+                    return Tuple.Create(-1, input, false);
                 }
             }
 
-            return output;
+            return Tuple.Create(output, input, false);
         }
 
         private static Tuple<int, List<int>> ProcessOpCode(int opCode)
@@ -126,7 +128,7 @@ namespace Day05
         public void Part01Test(int expected, int initial)
         {
             var input = Files.ReadFileAsArrayOfInt("/home/mmorgan/src/adventofcode2019/Day05/input");
-            Assert.AreEqual(expected, Part01(input, initial, 0));
+            Assert.AreEqual(expected, Part01(input, initial,0, false).Item1);
         }
     }
 }
