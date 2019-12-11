@@ -5,6 +5,7 @@ using System.Linq;
 using NUnit.Framework;
 using Utils;
 using Day05;
+using Utils;
 
 namespace Day07
 {
@@ -35,30 +36,37 @@ namespace Day07
             var maxScore = 0;
             foreach (var current in Permutate(inputs))
             {
-                var results = new List<int>();
-                var shouldContinue = true;
-                var firstRun = true;
-                var firstInput = true;
-                var memory = new Dictionary<char, int[]>();
-                var nextInit = new List<int> {0};
-                while (shouldContinue)
+                Console.WriteLine($"Looping for {current}");
+                var intInputs = current.ToCharArray().Select(c => Convert.ToInt32(c.ToString())).ToArray();
+                var memory = new Dictionary<int, Computer>();
+                int lastOutput = 0;
+                foreach (var i in intInputs)
                 {
-                    foreach (var c in current.ToCharArray())
+                    memory[i] = new Computer(new List<int>(input).ToArray()) { UserInput = new List<int>() };
+                    memory[i].UserInput.Add(i);
+                    memory[i].UserInput.Add(lastOutput);
+                    lastOutput = memory[i].RunComputer();
+                }
+                
+                var nextUserInput = memory[intInputs.Last()].Output;
+                var count = 0;
+
+                while (!memory[intInputs.Last()].Halted)
+                //while(true)
+                {
+                    foreach (var i in intInputs)
                     {
-                        var first = firstRun ? Convert.ToInt32(c.ToString()) : nextInit.First();
-                        if (!firstRun) nextInit.RemoveAt(0);
-                        var localInput = memory.ContainsKey(c) ? memory[c] : input;
-                        var (item1, item2, item3) = Day05.Program.Part01(localInput, first, 0, true);
-                        results.Add(item1);
-                        nextInit.Add(item1);
-                        memory[c] = item2;
-                        shouldContinue = item3;
-                        firstInput = false;
+                        Console.WriteLine($"For {i}");
+                        memory[i].UserInput.Add(nextUserInput);
+                        nextUserInput = memory[i].RunComputer();
+                        
+                        // Console.WriteLine($"Output: {memory[i].Output}");
                     }
 
-                    firstRun = false;
-                    if (results.Last() > maxScore) maxScore = results.Last();
+                    count++;
                 }
+                if (memory[intInputs.Last()].Output > maxScore) maxScore = memory[intInputs.Last()].Output;
+                Console.WriteLine($"max score {maxScore} after {count} loops");
             }
             
             return maxScore;
@@ -124,8 +132,8 @@ namespace Day07
         [Test]
         public void Part02Test()
         {
-            var input = System.IO.File.ReadLines("/home/mmorgan/src/adventofcode2019/Day06/input").ToList();
-            Assert.AreEqual(0, 0);
+            var input = Files.ReadFileAsArrayOfInt("/home/mmorgan/src/adventofcode2019/Day07/input");
+            Assert.AreEqual(17956613, Part02(input));
         }
     }
 }
