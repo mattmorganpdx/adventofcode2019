@@ -31,6 +31,12 @@ namespace Utils
             return input;
         }
 
+        public static List<int> ReadFileAsLineOfInt(string aFileName)
+        {
+            var line = System.IO.File.ReadLines(aFileName).First();
+            return line.ToCharArray().Select(x => Convert.ToInt32(x.ToString())).ToList();
+        }
+        
         public static Tuple<int, int> ReadFilesAsTupleOfInt(string aFileName)
         {
             var lines = System.IO.File.ReadLines(aFileName);
