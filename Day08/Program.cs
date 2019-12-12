@@ -41,8 +41,46 @@ namespace Day08
         }
 
 
-        private static int Part02(List<string> input)
+        private static int Part02(List<int> input, int width, int height)
         {
+            var length = width * height;
+            var layers = new List<List<int>>();
+            var layerCount = (input.Count / length);
+            for (var i = 0; i < layerCount; i++)
+            {
+                var layer = new List<int>();
+                for (var j = 0; j < length; j++)
+                {
+                    layer.Add(input[0]);
+                    input = input.Skip(1).ToList();
+                }
+                layers.Add(layer);
+            }
+            
+            var image = new int[length];
+
+            for (var i = 0; i < length; i++)
+            {
+                foreach (var layer in layers.Where(layer => layer[i] != 2))
+                {
+                    image[i] = layer[i];
+                    break;
+                }
+            }
+
+            for (var i = 0; i < length; i++)
+            {
+                if (image[i] == 0)
+                {
+                    Console.Write(" ");
+                }
+                else
+                {
+                    Console.Write(image[i]);
+                }
+                if ((i + 1) % width == 0) Console.Write("\n");
+            }
+
             return 0;
         }
 
@@ -69,8 +107,8 @@ namespace Day08
         [Test]
         public void Part02Test()
         {
-            // var input = System.IO.File.ReadLines("/home/mmorgan/src/adventofcode2019/Day06/input").ToList();
-            Assert.AreEqual(0, 0);
+            var input = Utils.Files.ReadFileAsLineOfInt("/home/mmorgan/src/adventofcode2019/Day08/input");
+            Assert.AreEqual(0, Part02(input, 25, 6));
         }
     }
 }
