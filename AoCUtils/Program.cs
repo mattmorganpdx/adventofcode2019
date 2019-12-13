@@ -18,6 +18,12 @@ namespace Utils
             var line = System.IO.File.ReadAllText(aFileName);
             return line.Split(",").Select(item => Convert.ToInt32(item)).ToArray();
         }
+        
+        public static long[] ReadFileAsArrayOfLong(string aFileName)
+        {
+            var line = System.IO.File.ReadAllText(aFileName);
+            return line.Split(",").Select(item => Convert.ToInt64(item)).ToArray();
+        }
 
         public static List<string[]> ReadFileAsListOfStringList(string aFileName)
         {

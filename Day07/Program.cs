@@ -30,19 +30,19 @@ namespace Day07
             return maxScore;
         }
 
-        private static int Part02(int[] input)
+        private static long Part02(int[] input)
         {
             const string inputs = "56789";
-            var maxScore = 0;
+            long maxScore = 0;
             foreach (var current in Permutate(inputs))
             {
                 Console.WriteLine($"Looping for {current}");
                 var intInputs = current.ToCharArray().Select(c => Convert.ToInt32(c.ToString())).ToArray();
-                var memory = new Dictionary<int, Computer>();
-                int lastOutput = 0;
+                var memory = new Dictionary<long, Computer>();
+                long lastOutput = 0;
                 foreach (var i in intInputs)
                 {
-                    memory[i] = new Computer(new List<int>(input).ToArray()) { UserInput = new List<int>() };
+                    memory[i] = new Computer(input.Select(Convert.ToInt64).ToArray()) { UserInput = new List<long>() };
                     memory[i].UserInput.Add(i);
                     memory[i].UserInput.Add(lastOutput);
                     lastOutput = memory[i].RunComputer();
