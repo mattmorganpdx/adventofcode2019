@@ -8,6 +8,7 @@ namespace Utils
     {
         private readonly long[] _input;
         private long _pc;
+
         public Computer(long[] aInput)
         {
             _input = new long[500000000];
@@ -17,13 +18,13 @@ namespace Utils
             long _pc = 0;
             long RelativeBase = 0;
         }
-        
+
         public List<long> UserInput { get; set; }
-        
+
         public long Output { get; set; }
-        
+
         public bool Halted { get; set; }
-        
+
         public long RelativeBase { get; set; }
 
         public long RunComputer()
@@ -33,23 +34,16 @@ namespace Utils
             {
                 try
                 {
-                    long first = 0;
-                    long second = 0;
-                    long third = 0;
                     switch (opCode.Item1)
                     {
                         case 1:
-                            first = GetValueFromMode(opCode, 0);
-                            second = GetValueFromMode(opCode, 1);
-                            third = GetValueFromMode(opCode, 2);
-                            _input[third] = _input[first] + _input[second];
+                            _input[GetValueFromMode(opCode, 2)] =
+                                _input[GetValueFromMode(opCode, 0)] + _input[GetValueFromMode(opCode, 1)];
                             _pc += 4;
                             break;
                         case 2:
-                            first = GetValueFromMode(opCode, 0);
-                            second = GetValueFromMode(opCode, 1);
-                            third = GetValueFromMode(opCode, 2);
-                            _input[third] = _input[first] * _input[second];
+                            _input[GetValueFromMode(opCode, 2)] =
+                                _input[GetValueFromMode(opCode, 0)] * _input[GetValueFromMode(opCode, 1)];
                             _pc += 4;
                             break;
                         case 3:
@@ -63,43 +57,23 @@ namespace Utils
                             _pc += 2;
                             return Output;
                         case 5:
-                            first = GetValueFromMode(opCode, 0);
-                            second = GetValueFromMode(opCode, 1);
-                            if (_input[first] > 0)
-                            {
-                                _pc = _input[second];
-                            }
-                            else
-                            {
-                                _pc += 3;
-                            }
-
+                            _pc = _input[GetValueFromMode(opCode, 0)] > 0
+                                ? _input[GetValueFromMode(opCode, 1)]
+                                : _pc + 3;
                             break;
                         case 6:
-                            first = GetValueFromMode(opCode, 0);
-                            second = GetValueFromMode(opCode, 1);
-                            if (_input[first] == 0)
-                            {
-                                _pc = _input[second];
-                            }
-                            else
-                            {
-                                _pc += 3;
-                            }
-
+                            _pc = _input[GetValueFromMode(opCode, 0)] == 0
+                                ? _input[GetValueFromMode(opCode, 1)]
+                                : _pc + 3;
                             break;
                         case 7:
-                            first = GetValueFromMode(opCode, 0);
-                            second = GetValueFromMode(opCode, 1);
-                            third = GetValueFromMode(opCode, 2);
-                            _input[third] = _input[first] < _input[second] ? 1 : 0;
+                            _input[GetValueFromMode(opCode, 2)] =
+                                _input[GetValueFromMode(opCode, 0)] < _input[GetValueFromMode(opCode, 1)] ? 1 : 0;
                             _pc += 4;
                             break;
                         case 8:
-                            first = GetValueFromMode(opCode, 0);
-                            second = GetValueFromMode(opCode, 1);
-                            third = GetValueFromMode(opCode, 2); //_input[_pc + 3];
-                            _input[third] = _input[first] == _input[second] ? 1 : 0;
+                            _input[GetValueFromMode(opCode, 2)] =
+                                _input[GetValueFromMode(opCode, 0)] == _input[GetValueFromMode(opCode, 1)] ? 1 : 0;
                             _pc += 4;
                             break;
                         case 9:
@@ -128,7 +102,7 @@ namespace Utils
             {
                 0 => _input[_pc + 1 + offset],
                 1 => (_pc + 1 + offset),
-                2 => RelativeBase + _input[ _pc + 1 + offset],
+                2 => RelativeBase + _input[_pc + 1 + offset],
                 _ => -1
             };
         }
