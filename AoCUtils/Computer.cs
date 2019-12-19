@@ -17,6 +17,7 @@ namespace Utils
             long Output = 0;
             long _pc = 0;
             long RelativeBase = 0;
+            UserInput = new List<long>();
         }
 
         public List<long> UserInput { get; set; }
