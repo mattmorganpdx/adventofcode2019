@@ -59,31 +59,89 @@ namespace Day12
 
         private static long Part02(List<(Vector3, Vector3)> input)
         {
-            var history = new Dictionary<float, List<List<(Vector3,Vector3)>>>();
+            var history = new Dictionary<string,
+                Dictionary<string,
+                    Dictionary<string,
+                        List<string>>>>();
 
-            var counter = 0L;
-            do
-            {
-                if (history.ContainsKey(SumVectors(input)))
-                {
-                    foreach (var possibleMatch in history[SumVectors(input)])
-                    {
-                        if (CompareSystems(input, possibleMatch)) return counter;
-                    }
-                }
-                else
-                {
-                    history.Add(SumVectors(input), new List<List<(Vector3, Vector3)>>());
-                }
-                var inputArr = new (Vector3,Vector3)[4];
-                input.CopyTo(inputArr);
-                history[SumVectors(input)].Add(inputArr.ToList());
-                
-                
-                input = GetNextInput(input, 0);
-                counter++;
-            } while (true);
             
+            var axis = new Dictionary<string, long>();
+            axis["X"] = 0;
+            axis["Y"] = 0;
+            axis["Z"] = 0;
+            foreach (var a in axis.Keys.ToArray())
+            {
+                var keepLooping = true;
+                var counter = 0L;
+                do
+                {
+                    // var pvString = input.Select(x => new string(x.ToString().ToArray())).ToArray();
+                    var pvString = input.Select(x =>
+                        x.Item1.GetType().GetField(a).GetValue(x.Item1) +
+                        x.Item2.GetType().GetField(a).GetValue(x.Item2).ToString()).ToArray();
+                    
+                    if (history.ContainsKey(pvString[0]))
+                    {
+                        if (history[pvString[0]].ContainsKey(pvString[1]))
+                        {
+                            if (history[pvString[0]][pvString[1]].ContainsKey(pvString[2]))
+                            {
+                                if (history[pvString[0]][pvString[1]][pvString[2]].Contains(pvString[3]))
+                                {
+                                    keepLooping = false;
+                                }
+                                else
+                                {
+                                    history[pvString[0]][pvString[1]][pvString[2]].Add(pvString[3]);
+                                }
+                            }
+                            else
+                            {
+                                history[pvString[0]][pvString[1]][pvString[2]] = new List<string>();
+                                history[pvString[0]][pvString[1]][pvString[2]].Add(pvString[3]);
+                            }
+                        }
+                        else
+                        {
+                            history[pvString[0]][pvString[1]] = new Dictionary<string, List<string>>();
+                            history[pvString[0]][pvString[1]][pvString[2]] = new List<string>();
+                            history[pvString[0]][pvString[1]][pvString[2]].Add(pvString[3]);
+                        }
+                    }
+                    else
+                    {
+                        history[pvString[0]] = new Dictionary<string, Dictionary<string, List<string>>>();
+                        history[pvString[0]][pvString[1]] = new Dictionary<string, List<string>>();
+                        history[pvString[0]][pvString[1]][pvString[2]] = new List<string>();
+                        history[pvString[0]][pvString[1]][pvString[2]].Add(pvString[3]);
+                    }
+
+
+                    input = GetNextInput(input, 0);
+                    counter++;
+                } while (keepLooping);
+
+                axis[a] = --counter;
+            }
+
+            Console.WriteLine($"{axis["X"]} * {axis["Y"]} * {axis["Z"]}");
+            return axis["X"] * axis["Y"] * axis["Z"];
+        }
+
+        private static void UpdateHistory<T>(IDictionary<string, T> history, string[] planets)
+        {
+            if (planets.Length > 1)
+            {
+                if (!history.ContainsKey(planets[0]))
+                {
+                    history[planets[0]] = default(T);
+                }
+                UpdateHistory(history[planets[0]] as Dictionary<string,object>, planets.Skip(1).ToArray());
+            }
+            else
+            {
+                history[planets[0]] = default(T);
+            }
         }
 
         private static bool CompareSystems(IEnumerable<(Vector3, Vector3)> a, IEnumerable<(Vector3, Vector3)> b)
@@ -218,8 +276,19 @@ namespace Day12
         [Test]
         public void Part02Test()
         {
-            // var input = System.IO.File.ReadLines("/home/mmorgan/src/adventofcode2019/Day06/input").ToList();
-            Assert.AreEqual(0, 0);
+            var a = new Vector3(-16, 15, -9);
+            var b = new Vector3(-14, 5, 4);
+            var c = new Vector3(2, 0, 6);
+            var d = new Vector3(-3, 18, 9);
+
+            var planets = new List<(Vector3, Vector3)>()
+            {
+                (a, new Vector3(0, 0, 0)),
+                (b, new Vector3(0, 0, 0)),
+                (c, new Vector3(0, 0, 0)),
+                (d, new Vector3(0, 0, 0)),
+            };
+            Assert.AreEqual(303459551979256, Part02(planets));
         }
     }
 }
